@@ -1,0 +1,89 @@
+.main {
+  min-height: 100svh;
+  padding: 1.5rem 1rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.toggle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #888;
+}
+
+.input {
+  font-size: 1.1rem;
+  padding: 0.65rem 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  outline: none;
+  width: 100%;
+  color: inherit;
+  background: transparent;
+  font-family: inherit;
+}
+
+.input:focus {
+  border-color: #111;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.btn {
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.9rem;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  margin-top: 0.5rem;
+}
+
+.btn:active {
+  opacity: 0.85;
+}
+
+.error   { font-size: 0.875rem; color: #c00; }
+.success { font-size: 0.875rem; color: #060; font-weight: 500; }
