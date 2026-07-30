@@ -1,0 +1,162 @@
+.main {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+}
+
+.card {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.sub {
+  font-size: 0.95rem;
+  color: #666;
+  margin: -0.75rem 0 0;
+}
+
+/* ── OAuth ── */
+.oauthGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.oauthBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid #e0e0e0;
+  background: transparent;
+  width: 100%;
+  font-family: inherit;
+}
+
+.oauthBtn:hover:not(:disabled) {
+  border-color: #aaa;
+}
+
+.oauthBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.apple {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+.apple:hover:not(:disabled) {
+  border-color: #333;
+  background: #222;
+}
+
+/* ── Divider ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #bbb;
+  font-size: 0.8rem;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+/* ── Form ── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #888;
+}
+
+.input {
+  font-size: 1rem;
+  padding: 0.65rem 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  outline: none;
+  width: 100%;
+  color: inherit;
+  background: transparent;
+  font-family: inherit;
+}
+
+.input:focus {
+  border-color: #111;
+}
+
+.btn {
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.85rem;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 0.25rem;
+  font-family: inherit;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Toggle ── */
+.toggle {
+  font-size: 0.875rem;
+  color: #666;
+  text-align: center;
+}
+
+.toggleBtn {
+  background: none;
+  border: none;
+  font-size: inherit;
+  font-weight: 600;
+  color: #111;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  font-family: inherit;
+}
+
+.error   { font-size: 0.875rem; color: #c00; }
+.success { font-size: 0.875rem; color: #060; }

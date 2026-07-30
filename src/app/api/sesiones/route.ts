@@ -1,76 +1,93 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
-import type { CrearSesionDTO, ApiResult, Sesion } from '@/types'
+import { getUsuarioActual } from '@/lib/supabase/server'
+import { fechaHoy } from '@/lib/supabase/helpers'
+import type { ApiResult, CrearSesionDTO, FinalizarSesionDTO, Sesion } from '@/types'
 
-// POST /api/sesiones
-// Body: CrearSesionDTO — el cliente envía la fecha del día
-// Si ya existe una sesión para esa fecha, la devuelve (upsert por fecha).
+function noAutorizado() {
+  return NextResponse.json<ApiResult<never>>({ error: 'No autenticado o perfil incompleto' }, { status: 401 })
+}
+
 export async function POST(req: Request) {
   let body: CrearSesionDTO
+  try { body = await req.json() } catch { return NextResponse.json<ApiResult<never>>({ error: 'Body inválido' }, { status: 400 }) }
 
-  try {
-    body = await req.json()
-  } catch {
-    return NextResponse.json<ApiResult<never>>(
-      { error: 'Body inválido' },
-      { status: 400 }
-    )
-  }
-
-  if (!body.fecha) {
-    return NextResponse.json<ApiResult<never>>(
-      { error: 'fecha es requerida' },
-      { status: 400 }
-    )
-  }
-
-  // Busca sesión existente para esa fecha antes de crear
-  const { data: existente } = await supabase
-    .from('sesiones')
-    .select()
-    .eq('fecha', body.fecha)
-    .maybeSingle()
-
-  if (existente) {
-    return NextResponse.json<ApiResult<Sesion>>({ data: existente })
-  }
+  const { supabase, usuario } = await getUsuarioActual()
+  if (!usuario) return noAutorizado()
 
   const { data, error } = await supabase
     .from('sesiones')
-    .insert({
-      id:        crypto.randomUUID(),
-      fecha:     body.fecha,
-      creado_en: new Date().toISOString(),
-    })
+    .insert({ usuario_id: usuario.usuario_id, split_id: body.split_id ?? null, notas: body.notas ?? null })
     .select()
     .single()
 
-  if (error) {
-    console.error('[POST /api/sesiones]', error)
-    return NextResponse.json<ApiResult<never>>(
-      { error: error.message },
-      { status: 500 }
-    )
-  }
-
+  if (error) return NextResponse.json<ApiResult<never>>({ error: error.message }, { status: 500 })
   return NextResponse.json<ApiResult<Sesion>>({ data }, { status: 201 })
 }
 
-// GET /api/sesiones
-// Devuelve las últimas 30 sesiones ordenadas por fecha desc
-export async function GET() {
+export async function GET(req: Request) {
+  const limit = Math.min(Math.max(parseInt(new URL(req.url).searchParams.get('limit') ?? '30') || 30, 1), 100)
+  const { supabase, usuario } = await getUsuarioActual()
+  if (!usuario) return noAutorizado()
+
   const { data, error } = await supabase
     .from('sesiones')
     .select()
-    .order('fecha', { ascending: false })
-    .limit(30)
+    .eq('usuario_id', usuario.usuario_id)
+    .order('iniciado_en', { ascending: false })
+    .limit(limit)
 
-  if (error) {
-    return NextResponse.json<ApiResult<never>>(
-      { error: error.message },
-      { status: 500 }
-    )
-  }
-
+  if (error) return NextResponse.json<ApiResult<never>>({ error: error.message }, { status: 500 })
   return NextResponse.json<ApiResult<Sesion[]>>({ data })
+}
+
+export async function PATCH(req: Request) {
+  let body: FinalizarSesionDTO
+  try { body = await req.json() } catch { return NextResponse.json<ApiResult<never>>({ error: 'Body inválido' }, { status: 400 }) }
+  if (!body.sesion_id || !body.finalizado_en) return NextResponse.json<ApiResult<never>>({ error: 'sesion_id y finalizado_en son requeridos' }, { status: 400 })
+
+  const { supabase, usuario } = await getUsuarioActual()
+  if (!usuario) return noAutorizado()
+
+  const { count } = await supabase
+    .from('series')
+    .select('*', { count: 'exact', head: true })
+    .eq('sesion_id', body.sesion_id)
+    .not('finalizado_en', 'is', null)
+
+  const { data: sesion, error } = await supabase
+    .from('sesiones')
+    .update({ finalizado_en: body.finalizado_en, notas: body.notas ?? null })
+    .eq('sesion_id', body.sesion_id)
+    .eq('usuario_id', usuario.usuario_id)
+    .select()
+    .single()
+
+  if (error) return NextResponse.json<ApiResult<never>>({ error: error.message }, { status: 500 })
+  if ((count ?? 0) > 0) await actualizarRacha(supabase, usuario.usuario_id)
+  return NextResponse.json<ApiResult<Sesion>>({ data: sesion })
+}
+
+async function actualizarRacha(supabase: Awaited<ReturnType<typeof getUsuarioActual>>['supabase'], usuarioId: number) {
+  const { data: sesiones } = await supabase
+    .from('sesiones')
+    .select('iniciado_en')
+    .eq('usuario_id', usuarioId)
+    .not('finalizado_en', 'is', null)
+    .order('iniciado_en', { ascending: false })
+    .limit(2)
+  if (!sesiones?.length) return
+
+  const { data: usuario } = await supabase
+    .from('usuarios')
+    .select('racha_actual, racha_maxima')
+    .eq('usuario_id', usuarioId)
+    .single()
+  if (!usuario) return
+
+  const anterior = sesiones[1]?.iniciado_en.slice(0, 10)
+  const diasDesde = anterior ? Math.round((new Date(fechaHoy()).getTime() - new Date(anterior).getTime()) / 86_400_000) : null
+  const nuevaRacha = diasDesde === null || diasDesde > 1 ? 1 : diasDesde === 1 ? usuario.racha_actual + 1 : null
+  if (nuevaRacha === null) return
+
+  await supabase.from('usuarios').update({ racha_actual: nuevaRacha, racha_maxima: Math.max(nuevaRacha, usuario.racha_maxima) }).eq('usuario_id', usuarioId)
 }

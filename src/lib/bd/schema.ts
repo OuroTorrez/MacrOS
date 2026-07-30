@@ -1,34 +1,28 @@
 import Dexie, { type EntityTable } from 'dexie'
-import type { Ejercicio, Sesion, Set, PR } from '@/types'
+import type { Ejercicio, GrupoMuscular, Sesion, Serie, PR } from '@/types'
 
-// Extendemos Dexie tipando cada tabla con su interface correspondiente.
-// EntityTable<T, K> = tabla de registros tipo T con llave primaria tipo K.
 class GymDB extends Dexie {
-  ejercicios!: EntityTable<Ejercicio, 'id'>
-  sesiones!:   EntityTable<Sesion,    'id'>
-  sets!:       EntityTable<Set,       'id'>
-  prs!:        EntityTable<PR,        'id'>
+  grupos_musculares!: EntityTable<GrupoMuscular, 'grupo_muscular_id'>
+  ejercicios!:        EntityTable<Ejercicio,      'ejercicio_id'>
+  sesiones!:          EntityTable<Sesion,          'sesion_id'>
+  series!:            EntityTable<Serie,           'serie_id'>
+  prs!:               EntityTable<PR,              'pr_id'>
 
   constructor() {
     super('gym-tracker')
 
-    // Solo indexamos los campos que necesitamos buscar o filtrar.
-    // Los demás campos de la interface existen en el objeto pero no como índices
-    // (indexar todo tiene costo de escritura — evítalo).
-    // '&' = llave primaria única.
     this.version(1).stores({
-      ejercicios: '&id, nombre, grupo_muscular',
-      sesiones:   '&id, fecha',
-      sets:       '&id, sesion_id, ejercicio_id, es_pr',
-      prs:        '&id, ejercicio_id, fecha',
+      grupos_musculares: '&grupo_muscular_id, nombre',
+      ejercicios:        '&ejercicio_id, grupo_muscular_id, usuario_id, nombre',
+      sesiones:          '&sesion_id, usuario_id, iniciado_en',
+      series:            '&serie_id, sesion_id, ejercicio_id',
+      prs:               '&pr_id, usuario_id, ejercicio_id, fecha',
     })
   }
 }
 
-// Singleton — una sola instancia de la DB en toda la app.
-// El guard de typeof window evita que Dexie corra en el servidor de Next.js:
-// los Route Handlers y RSC corren en Node donde IndexedDB no existe.
-export const db = typeof window !== 'undefined' ? new GymDB() : undefined;
+// Guard: Dexie solo corre en el browser, nunca en el servidor de Next.js
+const db = typeof window !== 'undefined' ? new GymDB() : null!
 
 export { db }
 export type { GymDB }

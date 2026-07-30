@@ -1,67 +1,118 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { db } from '@/lib/bd/schema'
 import { usePreferenciasStore } from '@/store/usePreferenciasStore'
-import { crearSesion, crearSet } from '@/lib/api/sets'
+import { crearSesion, crearSerie, getEjercicios, getUsuario } from '@/lib/api/series'
+import type { Ejercicio } from '@/types'
 import styles from './page.module.css'
-
-const hoy = () => new Date().toISOString().slice(0, 10)
-const uid = () => crypto.randomUUID()
 
 export default function RegistroPage() {
   const { unidad, toggleUnidad, aKg, formatPeso } = usePreferenciasStore()
 
-  const [ejercicio, setEjercicio] = useState('')
-  const [reps, setReps]           = useState('')
-  const [peso, setPeso]           = useState('')
-  const [nota, setNota]           = useState('')
-  const [guardado, setGuardado]   = useState<string | null>(null)
-  const [error, setError]         = useState<string | null>(null)
-  const [loading, setLoading]     = useState(false)
+  // ── Usuario autenticado ────────────────────────────────────────────────────
+  const [usuarioId, setUsuarioId] = useState<number | null>(null)
+
+  useEffect(() => {
+    // Obtiene el usuario de la sesión activa y resuelve su usuario_id interno
+    getUsuario().then((json) => {
+      if (json.data) setUsuarioId(json.data.usuario_id)
+    })
+  }, [])
+
+  // ── Ejercicios ─────────────────────────────────────────────────────────────
+  const [ejercicios, setEjercicios]     = useState<Ejercicio[]>([])
+  const [ejercicioId, setEjercicioId]   = useState<number | null>(null)
+  const [busqueda, setBusqueda]         = useState('')
+  const [mostrarLista, setMostrarLista] = useState(false)
+  const busquedaRef                     = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (!usuarioId) return
+    getEjercicios().then(res => {
+      if (res.data) setEjercicios(res.data)
+    })
+  }, [usuarioId])
+
+  const ejerciciosFiltrados = busqueda.trim()
+    ? ejercicios.filter(e => e.nombre.toLowerCase().includes(busqueda.toLowerCase()))
+    : ejercicios
+
+  const ejercicioSeleccionado = ejercicios.find(e => e.ejercicio_id === ejercicioId)
+
+  function seleccionarEjercicio(e: Ejercicio) {
+    setEjercicioId(e.ejercicio_id)
+    setBusqueda(e.nombre)
+    setMostrarLista(false)
+    setNumeroSerie(1)
+  }
+
+  function limpiarEjercicio() {
+    setEjercicioId(null)
+    setBusqueda('')
+    setMostrarLista(false)
+    busquedaRef.current?.focus()
+  }
+
+  // ── Formulario ─────────────────────────────────────────────────────────────
+  const [numeroSerie, setNumeroSerie] = useState(1)
+  const [reps, setReps]               = useState('')
+  const [peso, setPeso]               = useState('')
+  const [nota, setNota]               = useState('')
+  const [guardado, setGuardado]       = useState<string | null>(null)
+  const [error, setError]             = useState<string | null>(null)
+  const [loading, setLoading]         = useState(false)
 
   async function guardar() {
     setError(null)
     setGuardado(null)
-    if (!ejercicio.trim() || !reps || !peso) {
-      setError('Completa ejercicio, reps y peso.')
-      return
-    }
+
+    if (!usuarioId)  { setError('Sesión no disponible.'); return }
+    if (!ejercicioId) { setError('Selecciona un ejercicio.'); return }
+    if (!reps || !peso) { setError('Completa reps y peso.'); return }
 
     setLoading(true)
-    const pesoKg      = aKg(parseFloat(peso))
-    const ejercicioId = ejercicio.trim().toLowerCase()
-    const fecha       = hoy()
+    const pesoKg = aKg(parseFloat(peso))
 
     try {
-      // 1. Sesión del día — el API devuelve existente o crea una nueva
-      const resSesion = await crearSesion({ fecha })
-      if (resSesion.error) throw new Error(resSesion.error)
-      const sesion = resSesion.data
+      // 1. Sesión del día
+      const resSesion = await crearSesion({})
+      if (resSesion.error || !resSesion.data) throw new Error(resSesion.error ?? 'Error al crear sesión')
 
-      // 2. Guardar set en Supabase vía Route Handler
-      const resSet = await crearSet({
-        sesion_id:    sesion.id,
+      // 2. Guardar serie en Supabase
+      const resSerie = await crearSerie({
+        sesion_id:    resSesion.data.sesion_id,
         ejercicio_id: ejercicioId,
-        numero_set:   1, // ponytail: contador simple, mejora con historial
-        reps:         parseInt(reps),
+        numero_serie: numeroSerie,
+        repeticiones: parseInt(reps),
         peso_kg:      pesoKg,
         notas:        nota || undefined,
       })
-      if (resSet.error) throw new Error(resSet.error)
-      const set = resSet.data
+      if (resSerie.error || !resSerie.data) throw new Error(resSerie.error ?? 'Error al guardar serie')
+      const serie = resSerie.data
 
-      // 3. Guardar también en Dexie para offline — ponytail: fire and forget
-      db.sets.put({ ...set, es_pr: set.es_pr }).catch(console.error)
+      // 3. Espejo en Dexie para offline
+      db.series.put({
+        serie_id:     serie.serie_id,
+        sesion_id:    serie.sesion_id,
+        ejercicio_id: serie.ejercicio_id,
+        numero_serie: serie.numero_serie,
+        repeticiones: serie.repeticiones,
+        peso_kg:      serie.peso_kg,
+        notas:        serie.notas,
+        iniciado_en:  serie.iniciado_en,
+      }).catch(console.error)
 
       setGuardado(
-        set.es_pr
+        serie.es_pr
           ? `🏆 ¡PR! ${formatPeso(pesoKg)} × ${reps} reps`
-          : `✓ ${formatPeso(pesoKg)} × ${reps} reps guardado`
+          : `✓ Serie ${numeroSerie} — ${formatPeso(pesoKg)} × ${reps} reps`
       )
+      setNumeroSerie(n => n + 1)
       setReps('')
       setPeso('')
       setNota('')
+
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error al guardar')
     } finally {
@@ -72,23 +123,54 @@ export default function RegistroPage() {
   return (
     <main className={styles.main}>
       <div className={styles.header}>
-        <h1>Registrar set</h1>
+        <h1>Registrar serie</h1>
         <button className={styles.toggle} onClick={toggleUnidad}>
           {unidad.toUpperCase()}
         </button>
       </div>
 
       <div className={styles.form}>
-        <label className={styles.label}>
-          Ejercicio
-          <input
-            className={styles.input}
-            value={ejercicio}
-            onChange={e => setEjercicio(e.target.value)}
-            placeholder="press banca, sentadilla..."
-            autoCapitalize="none"
-          />
-        </label>
+
+        <div className={styles.buscadorWrap}>
+          <label className={styles.label}>Ejercicio</label>
+          <div className={styles.buscadorRow}>
+            <input
+              ref={busquedaRef}
+              className={styles.input}
+              value={busqueda}
+              onChange={e => { setBusqueda(e.target.value); setEjercicioId(null); setMostrarLista(true) }}
+              onFocus={() => setMostrarLista(true)}
+              placeholder="Buscar ejercicio..."
+              autoCapitalize="none"
+              autoComplete="off"
+            />
+            {ejercicioId && (
+              <button className={styles.clearBtn} onClick={limpiarEjercicio}>✕</button>
+            )}
+          </div>
+
+          {mostrarLista && ejerciciosFiltrados.length > 0 && (
+            <ul className={styles.lista}>
+              {ejerciciosFiltrados.slice(0, 8).map(e => (
+                <li key={e.ejercicio_id}>
+                  <button className={styles.listaItem} onClick={() => seleccionarEjercicio(e)}>
+                    <span className={styles.listaItemNombre}>{e.nombre}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {mostrarLista && busqueda.length > 1 && ejerciciosFiltrados.length === 0 && (
+            <p className={styles.sinResultados}>Sin resultados para &quot;{busqueda}&quot;</p>
+          )}
+        </div>
+
+        {ejercicioId && (
+          <div className={styles.serieIndicador}>
+            Serie {numeroSerie} — {ejercicioSeleccionado?.nombre}
+          </div>
+        )}
 
         <div className={styles.row}>
           <label className={styles.label}>
@@ -132,8 +214,12 @@ export default function RegistroPage() {
         {error    && <p className={styles.error}>{error}</p>}
         {guardado && <p className={styles.success}>{guardado}</p>}
 
-        <button className={styles.btn} onClick={guardar} disabled={loading}>
-          {loading ? 'Guardando...' : 'Guardar set'}
+        <button
+          className={styles.btn}
+          onClick={guardar}
+          disabled={loading || !ejercicioId || !usuarioId}
+        >
+          {loading ? 'Guardando...' : 'Guardar serie'}
         </button>
       </div>
     </main>
