@@ -1,49 +1,66 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-void: #0a0a0b;
+  --color-ink: #111114;
+  --color-glass: rgb(255 255 255 / 4%);
+  --color-bone: #e8e4dc;
+  --color-mist: #a09a91;
+  --color-glow: #c8c0b4;
+  --radius-xs: 8px;
+  --radius-sm: 14px;
+  --radius-md: 22px;
+  --radius-lg: 32px;
+  --radius-full: 9999px;
+  --ease-snap: cubic-bezier(0.2, 0.8, 0.3, 1);
+  --ease-settle: cubic-bezier(0.22, 0.9, 0.32, 1);
+  --ease-out-soft: cubic-bezier(0.18, 0.88, 0.32, 1);
+  --ease-glass: cubic-bezier(0.2, 0.9, 0.3, 1);
+  --text-label: .625rem;
+  --text-meta: .6875rem;
+  --text-body: .8125rem;
+  --text-ui: .875rem;
+  --text-title-sm: 1.125rem;
+  --text-title: clamp(1.25rem, 4.5vw, 1.75rem);
+  --text-hero: clamp(1.5rem, 6vw, 2.25rem);
+  color-scheme: dark;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+* { box-sizing: border-box; padding: 0; margin: 0; }
 
-html {
-  height: 100%;
-}
+html, body { min-height: 100%; max-width: 100vw; overflow-x: hidden; }
 
-html,
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100svh;
+  color: var(--color-bone);
+  background: var(--color-void);
+  font-family: Inter, "DM Sans", Arial, sans-serif;
+  font-size: var(--text-body);
+  line-height: 1.45;
+  text-transform: uppercase;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+body::before {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.36'/%3E%3C/svg%3E");
+  opacity: 0.07;
+  content: "";
+  pointer-events: none;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+button, input, select, textarea { font: inherit; }
+body :where(main, header, nav, aside, section, form, h1, h2, h3, h4, p, label, button, small, strong, span, select, option, input) { text-transform: uppercase; }
+input[type="email"], input[type="password"], input[type="url"], textarea { text-transform: none; }
+
+:where(h1, h2, h3, h4, p, button, label, strong, small, [data-initial]):not([data-no-initial])::first-letter {
+  font-size: 1.4em;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+a { color: inherit; text-decoration: none; }
+::selection { color: var(--color-void); background: var(--color-glow); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 1ms !important; animation-duration: 1ms !important; }
 }

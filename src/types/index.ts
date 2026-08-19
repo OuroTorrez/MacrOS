@@ -1,5 +1,5 @@
 // =============================================================================
-// GYM TRACKER — TIPOS TYPESCRIPT
+// MacrOS — TIPOS TYPESCRIPT
 // =============================================================================
 // Convenciones:
 //   • Todos los IDs son number (INT en Postgres)
@@ -61,6 +61,14 @@ export interface SplitEjercicio {
   reps_objetivo:      number
   descanso_seg:       number      // segundos — viene convertido desde INTERVAL
   notas?:             string
+}
+
+export interface SplitEjercicioConfigurado extends SplitEjercicio {
+  ejercicio: Pick<Ejercicio, 'ejercicio_id' | 'nombre'>
+}
+
+export interface SplitConfigurado extends Split {
+  ejercicios: SplitEjercicioConfigurado[]
 }
 
 
@@ -134,6 +142,10 @@ export type CrearSplitDTO = Pick<Split,
 export type CrearSplitEjercicioDTO = Pick<SplitEjercicio,
   'split_id' | 'ejercicio_id' | 'orden' | 'series_objetivo' | 'reps_objetivo' | 'descanso_seg' | 'notas'
 >
+
+export type CrearSplitConfiguradoDTO = CrearSplitDTO & {
+  ejercicios: Array<Pick<SplitEjercicio, 'ejercicio_id' | 'series_objetivo' | 'reps_objetivo' | 'descanso_seg' | 'notas'>>
+}
 
 export type CrearEjercicioDTO = Pick<Ejercicio,
   'grupo_muscular_id' | 'nombre' | 'descripcion' | 'imagen_forma'

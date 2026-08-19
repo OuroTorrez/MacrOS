@@ -9,8 +9,8 @@ export default async function Home() {
 
   return (
     <main className={styles.main}>
-      <p className={styles.eyebrow}>Gym Tracker</p>
-      <h1>Hola, {usuario.nombre}</h1>
+      <p className={styles.eyebrow}>MacrOS</p>
+      <h1>Hola, <span data-initial>{usuario.nombre}</span></h1>
       <p>Tu cuenta ya está lista. El siguiente paso es iniciar o retomar un entrenamiento.</p>
     </main>
   )

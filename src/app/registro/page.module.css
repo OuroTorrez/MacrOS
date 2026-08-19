@@ -1,182 +1,22 @@
-.main {
-  min-height: 100svh;
-  padding: 1.5rem 1rem;
-  max-width: 480px;
-  margin: 0 auto;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-}
-
-.header h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.toggle {
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.25rem 0.75rem;
-  border: 2px solid currentColor;
-  border-radius: 4px;
-  background: transparent;
-  cursor: pointer;
-  letter-spacing: 0.05em;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #888;
-}
-
-.input {
-  font-size: 1.1rem;
-  padding: 0.65rem 0.75rem;
-  border: 2px solid #e0e0e0;
-  border-radius: 6px;
-  outline: none;
-  width: 100%;
-  color: inherit;
-  background: transparent;
-  font-family: inherit;
-}
-
-.input:focus {
-  border-color: #111;
-}
-
-/* ── Buscador ── */
-.buscadorWrap {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  position: relative;
-}
-
-.buscadorRow {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.buscadorRow .input {
-  flex: 1;
-}
-
-.clearBtn {
-  font-size: 0.85rem;
-  padding: 0.65rem 0.75rem;
-  border: 2px solid #e0e0e0;
-  border-radius: 6px;
-  background: transparent;
-  cursor: pointer;
-  color: #888;
-  white-space: nowrap;
-}
-
-.lista {
-  list-style: none;
-  border: 2px solid #111;
-  border-radius: 6px;
-  overflow: hidden;
-  background: #fff;
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  z-index: 10;
-  max-height: 260px;
-  overflow-y: auto;
-}
-
-.listaItem {
-  width: 100%;
-  text-align: left;
-  background: transparent;
-  border: none;
-  padding: 0.75rem 1rem;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.listaItem:last-child {
-  border-bottom: none;
-}
-
-.listaItem:hover {
-  background: #f5f5f5;
-}
-
-.listaItemNombre {
-  font-size: 0.95rem;
-  color: #111;
-}
-
-.sinResultados {
-  font-size: 0.85rem;
-  color: #888;
-  padding: 0.5rem 0;
-}
-
-/* ── Serie indicador ── */
-.serieIndicador {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #555;
-  padding: 0.5rem 0.75rem;
-  background: #f5f5f5;
-  border-radius: 6px;
-}
-
-/* ── Grid reps/peso ── */
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-/* ── Botón principal ── */
-.btn {
-  font-size: 1rem;
-  font-weight: 700;
-  padding: 0.9rem;
-  background: #111;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  letter-spacing: 0.02em;
-  margin-top: 0.5rem;
-}
-
-.btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.btn:active:not(:disabled) {
-  opacity: 0.85;
-}
-
-.error   { font-size: 0.875rem; color: #c00; }
-.success { font-size: 0.875rem; color: #060; font-weight: 500; }
+.main { min-height: 100svh; width: min(100%, 32.5rem); margin: auto; padding: 2rem 1.25rem 7.5rem; }
+.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+.header h1 { font-family: "Space Grotesk", Arial, sans-serif; font-size: var(--text-title); font-weight: 600; letter-spacing: -.05em; }
+.toggle, .clearBtn { min-height: 2.25rem; padding: 0 .75rem; border: 1px solid rgb(255 255 255 / 10%); border-radius: var(--radius-full); color: var(--color-mist); background: var(--color-glass); cursor: pointer; font: var(--text-label) "DM Mono", Consolas, monospace; letter-spacing: .08em; }
+.form { display: flex; flex-direction: column; gap: 1.25rem; padding: 1.5rem; border-top: 1px solid rgb(255 255 255 / 7%); border-left: 1px solid rgb(255 255 255 / 7%); border-radius: var(--radius-md); background: var(--color-glass); box-shadow: 0 0 0 1px rgb(255 255 255 / 4%), 0 .5rem 2rem rgb(0 0 0 / 60%), inset 0 1px rgb(255 255 255 / 6%); backdrop-filter: blur(1rem); }
+.label { display: flex; flex-direction: column; gap: .5rem; color: var(--color-mist); font: var(--text-label) "DM Mono", Consolas, monospace; letter-spacing: .1em; text-transform: uppercase; }
+.input { width: 100%; min-height: 3.25rem; padding: .75rem; border: 1px solid rgb(255 255 255 / 7%); border-radius: var(--radius-sm); outline: none; color: var(--color-bone); background: rgb(255 255 255 / 3%); }
+.input:focus { border-color: rgb(255 255 255 / 16%); }
+.buscadorWrap { position: relative; display: flex; flex-direction: column; gap: .5rem; }
+.buscadorRow { display: flex; align-items: center; gap: .5rem; }
+.buscadorRow .input { flex: 1; }
+.lista { position: absolute; z-index: 2; top: calc(100% + .25rem); right: 0; left: 0; max-height: 16.25rem; overflow-y: auto; list-style: none; border: 1px solid rgb(255 255 255 / 10%); border-radius: var(--radius-sm); background: var(--color-ink); box-shadow: 0 .5rem 2rem rgb(0 0 0 / 60%); }
+.listaItem { display: flex; flex-direction: column; gap: .125rem; width: 100%; padding: .75rem; border: 0; border-bottom: 1px solid rgb(255 255 255 / 7%); color: var(--color-bone); background: transparent; cursor: pointer; text-align: left; }
+.listaItem:hover { background: rgb(255 255 255 / 4%); }
+.listaItemNombre { font-size: var(--text-ui); }
+.sinResultados { padding: .5rem 0; color: var(--color-mist); font-size: var(--text-ui); }
+.serieIndicador { padding: .75rem; border-radius: var(--radius-sm); color: var(--color-mist); background: rgb(255 255 255 / 4%); font: var(--text-meta) "DM Mono", Consolas, monospace; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.btn { min-height: 3.25rem; border: 0; border-radius: var(--radius-sm); color: var(--color-void); background: var(--color-bone); cursor: pointer; font-weight: 600; transition: transform 150ms var(--ease-snap); }
+.btn:active:not(:disabled) { transform: scale(.975); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.error, .success { padding: .75rem; border-radius: var(--radius-xs); color: var(--color-bone); background: rgb(255 255 255 / 6%); font-size: var(--text-ui); }

@@ -1,11 +1,11 @@
-.main { min-height: 100svh; display: grid; place-items: center; padding: 1rem; }
-.card { width: 100%; max-width: 380px; display: grid; gap: 1rem; }
-.card h1 { font-size: 1.75rem; }
-.card > p { color: #666; }
-.card label { display: grid; gap: .4rem; font-size: .9rem; font-weight: 600; }
-.card label span { color: #777; font-weight: 400; }
-.card input { border: 2px solid #e0e0e0; border-radius: 6px; padding: .7rem; font: inherit; background: transparent; color: inherit; }
-.card input:focus { outline: none; border-color: #111; }
-.card button { border: 0; border-radius: 6px; padding: .85rem; background: #111; color: #fff; cursor: pointer; font: inherit; font-weight: 700; }
+.main { display: grid; min-height: 100svh; place-items: center; padding: 2rem 1.25rem; }
+.card { display: grid; gap: 1.25rem; width: min(100%, 27.5rem); padding: 1.5rem; border-top: 1px solid rgb(255 255 255 / 7%); border-left: 1px solid rgb(255 255 255 / 7%); border-radius: var(--radius-lg); background: var(--color-glass); box-shadow: 0 0 0 1px rgb(255 255 255 / 4%), 0 .5rem 2rem rgb(0 0 0 / 60%), inset 0 1px rgb(255 255 255 / 6%); backdrop-filter: blur(1.25rem); }
+.card h1 { font-family: "Space Grotesk", Arial, sans-serif; font-size: var(--text-title); font-weight: 600; letter-spacing: -.05em; }
+.card > p, .card label span { color: var(--color-mist); }
+.card label { display: grid; gap: .5rem; color: var(--color-mist); font: var(--text-label) "DM Mono", Consolas, monospace; letter-spacing: .1em; text-transform: uppercase; }
+.card input { min-height: 3rem; padding: .75rem; border: 1px solid rgb(255 255 255 / 7%); border-radius: var(--radius-sm); outline: none; color: var(--color-bone); background: rgb(255 255 255 / 3%); }
+.card input:focus { border-color: rgb(255 255 255 / 16%); }
+.card button { min-height: 3rem; border: 0; border-radius: var(--radius-sm); color: var(--color-void); background: var(--color-bone); cursor: pointer; font-weight: 600; transition: transform 150ms var(--ease-snap); }
+.card button:active:not(:disabled) { transform: scale(.975); }
 .card button:disabled { opacity: .5; cursor: not-allowed; }
-.error { color: #b00020 !important; }
+.error { padding: .75rem; border-radius: var(--radius-xs); color: var(--color-bone); background: rgb(255 255 255 / 6%); font-size: var(--text-ui); }

@@ -1,0 +1,22 @@
+.bar { position: fixed; z-index: 9; top: 0; right: 0; left: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; min-block-size: 3.5rem; padding: max(.5rem, env(safe-area-inset-top)) clamp(1.25rem, 4vw, 3rem) .5rem; color: var(--color-bone); transition: transform 200ms var(--ease-out-soft), opacity 150ms var(--ease-snap); }
+.reservedSpace { block-size: calc(3.5rem + env(safe-area-inset-top)); }
+.hidden { opacity: 0; pointer-events: none; transform: translateY(-100%); }
+.logo { justify-self: center; font-family: "Space Grotesk", Arial, sans-serif; font-size: clamp(1rem, 3vw, 1.25rem); font-weight: 600; letter-spacing: .08em; line-height: 1; }
+.logo small { font-size: .68em; }
+.logo small::first-letter { font-size: inherit; }
+.avatarButton { justify-self: end; inline-size: clamp(2rem, 6vw, 2.5rem); aspect-ratio: 1; overflow: clip; border: 1px solid rgb(255 255 255 / 10%); border-radius: var(--radius-full); padding: 0; background: var(--color-glass); cursor: pointer; }
+.avatar { inline-size: 100%; block-size: 100%; object-fit: cover; }
+.panel { position: fixed; z-index: 20; inset: 0; display: grid; align-content: start; gap: 2rem; padding: max(2rem, env(safe-area-inset-top)) 1.25rem 2rem; overflow-y: auto; border-top: 1px solid rgb(255 255 255 / 7%); border-left: 1px solid rgb(255 255 255 / 7%); background: rgb(17 17 20 / 94%); box-shadow: -1rem 0 2rem rgb(0 0 0 / 60%); backdrop-filter: blur(1.25rem); -webkit-backdrop-filter: blur(1.25rem); animation: open-panel 220ms var(--ease-out-soft); }
+.panelHeader { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1rem; }
+.avatarLarge { inline-size: clamp(4.5rem, 16vw, 6rem); aspect-ratio: 1; border: 1px solid rgb(255 255 255 / 10%); border-radius: var(--radius-full); object-fit: cover; }
+.panelLabel { color: var(--color-mist); font: var(--text-label) "DM Mono", Consolas, monospace; letter-spacing: .12em; }
+.panelHeader h2 { margin-top: .25rem; font-family: "Space Grotesk", Arial, sans-serif; font-size: var(--text-title-sm); font-weight: 500; letter-spacing: -.04em; }
+.close { inline-size: 2.5rem; aspect-ratio: 1; border: 1px solid rgb(255 255 255 / 10%); border-radius: var(--radius-full); color: var(--color-bone); background: transparent; cursor: pointer; font-size: var(--text-title-sm); }
+.menu { display: grid; border-top: 1px solid rgb(255 255 255 / 7%); }
+.menu > button, .submenu button { display: flex; align-items: center; justify-content: space-between; min-block-size: 3.5rem; border: 0; border-bottom: 1px solid rgb(255 255 255 / 7%); color: var(--color-bone); background: transparent; cursor: pointer; font: var(--text-meta) "DM Mono", Consolas, monospace; letter-spacing: .1em; text-align: left; }
+.submenu { display: grid; padding-inline-start: 1rem; background: rgb(255 255 255 / 3%); }
+.submenu button { color: var(--color-mist); font-family: Inter, "DM Sans", Arial, sans-serif; letter-spacing: 0; }
+.signOut { color: var(--color-mist) !important; }
+@keyframes open-panel { from { opacity: 0; transform: translateX(8%); } }
+@media (min-width: 48rem) { .panel { inset: 1rem 1rem 1rem auto; inline-size: min(100%, 28rem); border-radius: var(--radius-lg); } }
+@media (prefers-reduced-motion: reduce) { .bar, .panel { animation: none; transition: none; } }

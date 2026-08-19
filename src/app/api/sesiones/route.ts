@@ -14,6 +14,11 @@ export async function POST(req: Request) {
   const { supabase, usuario } = await getUsuarioActual()
   if (!usuario) return noAutorizado()
 
+  if (body.split_id) {
+    const { data: split } = await supabase.from('splits').select('split_id').eq('split_id', body.split_id).is('eliminado_en', null).maybeSingle()
+    if (!split) return NextResponse.json<ApiResult<never>>({ error: 'Split no encontrado' }, { status: 404 })
+  }
+
   const { data, error } = await supabase
     .from('sesiones')
     .insert({ usuario_id: usuario.usuario_id, split_id: body.split_id ?? null, notas: body.notas ?? null })

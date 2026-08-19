@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Navbar from "@/components/navbar/Navbar";
+import Topbar from "@/components/topbar/Topbar";
 
 export const metadata: Metadata = {
-  title: "Gym Tracker",
+  title: "MacrOS",
   description: "Registra tus entrenamientos y progreso.",
 };
 
@@ -13,8 +15,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      
-      <body>{children}</body>
+      <body>
+        <Topbar/>
+        {children}
+        <Navbar/>
+      </body>
     </html>
   );
 }

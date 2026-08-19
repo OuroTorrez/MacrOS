@@ -28,15 +28,17 @@ export async function createSupabaseServer() {
 // Único punto de entrada para rutas que necesitan identidad y perfil interno.
 export async function getUsuarioActual() {
   const supabase = await createSupabaseServer()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data } = await supabase.auth.getClaims()
+  const claims = data?.claims
+  const userId = claims?.sub
 
-  if (!user) return { supabase, authUser: null, usuario: null }
+  if (!userId) return { supabase, authUser: null, usuario: null }
 
   const { data: usuario } = await supabase
     .from('usuarios')
     .select()
-    .eq('usuario_uuid', user.id)
+    .eq('usuario_uuid', userId)
     .maybeSingle<Usuario>()
 
-  return { supabase, authUser: user, usuario }
+  return { supabase, authUser: { id: userId }, usuario }
 }

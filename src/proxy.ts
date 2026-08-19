@@ -29,20 +29,19 @@ export async function proxy(request: NextRequest) {
   )
 
   // Refresca la sesión — no remuevas este await
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data } = await supabase.auth.getClaims()
+  const claims = data?.claims
 
-  // Rutas protegidas — redirige a /login si no hay sesión
-  const rutasProtegidas = ['/onboarding', '/registro', '/historial', '/perfil']
-  const esRutaProtegida = rutasProtegidas.some(r =>
-    request.nextUrl.pathname.startsWith(r)
-  )
+  const { pathname } = request.nextUrl
+  const esRutaPublica = pathname === '/login' || pathname.startsWith('/auth/')
+  const esApi = pathname.startsWith('/api/')
 
-  if (esRutaProtegida && !user) {
+  if (!claims && !esRutaPublica && !esApi) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
   // Si ya está autenticado y va a /login, redirige al home
-  if (request.nextUrl.pathname === '/login' && user) {
+  if (pathname === '/login' && claims) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
